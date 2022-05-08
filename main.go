@@ -20,6 +20,8 @@ import (
 	"gopkg.in/square/go-jose.v2"
 )
 
+const RFC3339Format = "%d-%02d-%02dT%02d:%02d:%02d"
+
 var (
 	baseUrl             = utils.GetEnv("SANDBOXURL")
 	pullFundEndPoint    = utils.GetEnv("PULLFUNDSURL")
@@ -44,14 +46,11 @@ func main() {
 	acquiringBin := "408999"
 
 	t := time.Now()
-	localTransactionDateTime := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d",
+	localTransactionDateTime := fmt.Sprintf(RFC3339Format,
 		t.Year(), t.Month(), t.Day(),
 		t.Hour(), t.Minute(), t.Second())
 
-	log.Println("####################################################################################")
 	log.Println("######################## START PULL (OCT)  Transaction #############################")
-	log.Println("####################################################################################")
-
 	pullFundsTransactionRequest := models.PullFundsTransactionRequest{
 		Surcharge:                                "11.99",
 		CpsAuthorizationCharacteristicsIndicator: "Y",
@@ -133,15 +132,9 @@ func main() {
 	}
 
 	log.Printf("AFT Response Data: %+v", pullFundsTransactionResponse)
-
-	log.Println("####################################################################################")
 	log.Println("######################## END PULL (OCT)  Transaction ###############################")
-	log.Println("####################################################################################")
 
-	log.Println("####################################################################################")
 	log.Println("######################## START PUSH (OCT)  Transaction #############################")
-	log.Println("####################################################################################")
-
 	pushFundsTransactionRequest := models.PushFundsTransactionRequest{
 		Amount:                   "124.05",
 		SenderAddress:            "901MetroCenterBlvd",
@@ -213,15 +206,9 @@ func main() {
 		log.Println(err)
 	}
 	log.Printf("OCT Response Data: %+v", pushFundsTransactionResponse)
-
-	log.Println("####################################################################################")
 	log.Println("######################## END PUSH (OCT)  Transaction ###############################")
-	log.Println("####################################################################################")
 
-	log.Println("####################################################################################")
 	log.Println("######################## START QUERY API ###########################################")
-	log.Println("####################################################################################")
-
 	var responseMap map[string]json.RawMessage
 	err = json.Unmarshal([]byte(responsePayload), &responseMap)
 	if err != nil {
@@ -234,11 +221,7 @@ func main() {
 
 	responsePayload = invokeAPI(transactionQueryEndPoint, http.MethodGet, "")
 	log.Println("Query Response Data: ", responsePayload)
-
-	log.Println("####################################################################################")
 	log.Println("######################## END QUERY API #############################################")
-	log.Println("####################################################################################")
-
 }
 
 func invokeAPI(resourcePath string, httpMethod string, payload string) string {

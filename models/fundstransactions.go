@@ -47,6 +47,11 @@ type PointOfServiceData struct {
 	MotoECIIndicator string `json:"motoECIIndicator"`
 }
 
+type MagneticStripeData struct {
+	Track1Data string `json:"track1Data"`
+	Track2Data string `json:"track2Data,omitempty"`
+}
+
 // PullFundsTransactionRequest Resource debits (pulls) funds from a sender's Visa account (in preparation for
 // pushing funds to a recipient's account) by initiating a financial message called an Account Funding Transaction (AFT)
 type PullFundsTransactionRequest struct {
@@ -73,6 +78,7 @@ type PullFundsTransactionRequest struct {
 	SenderCardExpiryDate                     string                      `json:"senderCardExpiryDate"`
 	NationalReimbursementFee                 string                      `json:"nationalReimbursementFee"`
 	PointOfServiceData                       PointOfServiceData          `json:"pointOfServiceData"`
+	MagneticStripeData                       MagneticStripeData          `json:"magneticStripeData,omitempty"`
 }
 
 type DeferredOCTData struct {
