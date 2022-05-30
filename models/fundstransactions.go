@@ -529,30 +529,58 @@ type TokenData struct {
 // PushFundsTransactionRequest resource credits (pushes) funds to a recipient's Visa accounts by initiating a
 // financial message called an Original Credit Transaction (OCT).
 type PushFundsTransactionRequest struct {
-	Amount                        string                      `json:"amount"`
-	SenderAddress                 string                      `json:"senderAddress"`
-	LocalTransactionDateTime      string                      `json:"localTransactionDateTime"`
-	PointOfServiceData            PointOfServiceData          `json:"pointOfServiceData"`
+	// The amount of the transaction, inclusive of all fees you assess for the transaction, including currency
+	// conversion fees. If the originator is populating the surcharge or foreignExchangeFeeTransaction field,
+	// they must be included in the amount field.
+	Amount        float32 `json:"amount"`
+	SenderAddress string  `json:"senderAddress"`
+	// This field contains the local date and time of the transaction takes place
+	// originated from merchant, service provider or acquirer. Format: YYYY-MM-DDThh:mm:ss
+	LocalTransactionDateTime string `json:"localTransactionDateTime"`
+	// Contains a code identifying transaction conditions at the point-of-sale or point of service.
+	// For a CardPresent Transactions, this field is required.
+	PointOfServiceData            PointOfServiceData          `json:"pointOfServiceData,omitempty"`
 	RecipientPrimaryAccountNumber string                      `json:"recipientPrimaryAccountNumber"`
-	ColombiaNationalServiceData   ColombiaNationalServiceData `json:"colombiaNationalServiceData"`
+	ColombiaNationalServiceData   ColombiaNationalServiceData `json:"colombiaNationalServiceData,omitempty"`
 	CardAcceptor                  CardAcceptor                `json:"cardAcceptor"`
-	SenderReference               string                      `json:"senderReference"`
-	TransactionIdentifier         string                      `json:"transactionIdentifier"`
-	AcquirerCountryCode           string                      `json:"acquirerCountryCode"`
-	AcquiringBin                  string                      `json:"acquiringBin"`
-	RetrievalReferenceNumber      string                      `json:"retrievalReferenceNumber"`
-	SenderCity                    string                      `json:"senderCity"`
-	SenderStateCode               string                      `json:"senderStateCode"`
-	SystemsTraceAuditNumber       string                      `json:"systemsTraceAuditNumber"`
-	SenderName                    string                      `json:"senderName"`
-	BusinessApplicationId         string                      `json:"businessApplicationId"`
-	SettlementServiceIndicator    string                      `json:"settlementServiceIndicator"`
-	MerchantCategoryCode          string                      `json:"merchantCategoryCode"`
-	TransactionCurrencyCode       string                      `json:"transactionCurrencyCode"`
-	RecipientName                 string                      `json:"recipientName"`
-	SenderCountryCode             string                      `json:"senderCountryCode"`
-	SourceOfFundsCode             string                      `json:"sourceOfFundsCode"`
-	SenderAccountNumber           string                      `json:"senderAccountNumber"`
+	// If the transaction is a money transfer, pre-paid load, or credit card bill pay, and if the sender intends to
+	// fund the transaction with a non-financial instrument (for example, cash), a reference number unique to
+	// the sender is required. If the transaction is a funds' disbursement, the field is required.
+	SenderReference       string `json:"senderReference,omitempty"`
+	TransactionIdentifier string `json:"transactionIdentifier"`
+	// Use a 3-digit numeric country code for the country of the BIN under which your Visa Direct solution is registered. .
+	AcquirerCountryCode CountryCode `json:"acquirerCountryCode"`
+	// The Bank Identification Number (BIN) under which your Visa Direct is registered.
+	AcquiringBin             int                      `json:"acquiringBin"`
+	RetrievalReferenceNumber RetrievalReferenceNumber `json:"retrievalReferenceNumber"`
+	SenderCity               string                   `json:"senderCity,omitempty"`
+	SenderStateCode          string                   `json:"senderStateCode,omitempty"`
+	//  A unique 6-digit value should be used for each API method. However, when passing the (AFTR) method, this value must
+	//  match the systemsTraceAuditNumber previously passed with the AFT method for the current transaction.
+	SystemsTraceAuditNumber string `json:"systemsTraceAuditNumber"`
+	// If the transaction is a money transfer and cross-border , a pre-paid load or credit card bill pay , or
+	// U.S. domestic, this field must contain the sender's name. If the transaction is a funds disbursement and
+	// cross-border or U.S. domestic, this field must contain either the name of the merchant or
+	// government entity sending the funds' disbursement.
+	// Recommended Format: Last Name/Family Surname 1 + + Space + First Name/Given Name + Space +
+	// Middle Initial or Middle name (optional) + space
+	SenderName string `json:"senderName,omitempty"`
+	// Identifies the programs' business application type for VisaNet transaction processing
+	// For Money Transfer, AA applies to transactions where the sender and recipient are the same person and
+	// PP applies to transactions where the sender and recipient are not the same person.
+	BusinessApplicationId BusinessApplicationCode `json:"businessApplicationId"`
+	// This flag enables the originator to request for a particular settlement service to be used
+	// for settling the transaction.
+	SettlementServiceIndicator SettlementServiceIndicator `json:"settlementServiceIndicator,omitempty"`
+	// If provided, then the value overrides the one present in onboarding data.
+	// If the merchantCategoryCode value is not populated in onboarding data then this field is mandatory.
+	MerchantCategoryCode    int64       `json:"merchantCategoryCode,omitempty"`
+	TransactionCurrencyCode CountryCode `json:"transactionCurrencyCode"`
+	// Recipient name is required for cross-border enhanced money transfer AFTs.
+	RecipientName       string            `json:"recipientName,omitempty"`
+	SenderCountryCode   string            `json:"senderCountryCode,omitempty"`
+	SourceOfFundsCode   SourceOfFundsCode `json:"sourceOfFundsCode,omitempty"`
+	SenderAccountNumber string            `json:"senderAccountNumber,omitempty"`
 }
 
 type PushFundsTransactionResponse struct {

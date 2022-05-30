@@ -139,7 +139,7 @@ func main() {
 
 	log.Println("######################## START PUSH (OCT)  Transaction #############################")
 	pushFundsTransactionRequest := models.PushFundsTransactionRequest{
-		Amount:                   "124.05",
+		Amount:                   124.05,
 		SenderAddress:            "901MetroCenterBlvd",
 		LocalTransactionDateTime: localTransactionDateTime,
 		PointOfServiceData: models.PointOfServiceData{
@@ -172,21 +172,20 @@ func main() {
 			Name:       "VisaInc.USA-FosterCity",
 			TerminalId: "TID-9999",
 		},
-		SenderReference:            "",
-		AcquirerCountryCode:        "840",
-		AcquiringBin:               strconv.Itoa(acquiringBin),
+		AcquirerCountryCode:        models.USA,
+		AcquiringBin:               acquiringBin,
 		RetrievalReferenceNumber:   "412770451018",
 		SenderCity:                 "FosterCity",
 		SenderStateCode:            "CA",
-		SystemsTraceAuditNumber:    "451018",
+		SystemsTraceAuditNumber:    strconv.Itoa(systemsTraceAuditNumber),
 		SenderName:                 "MohammedQasim",
-		BusinessApplicationId:      "AA",
-		SettlementServiceIndicator: "9",
-		MerchantCategoryCode:       "6012",
-		TransactionCurrencyCode:    "USD",
+		BusinessApplicationId:      models.AccountToAccount,
+		SettlementServiceIndicator: models.VIPToDecide,
+		MerchantCategoryCode:       6012,
+		TransactionCurrencyCode:    models.USA,
 		RecipientName:              "rohan",
 		SenderCountryCode:          "124",
-		SourceOfFundsCode:          "05",
+		SourceOfFundsCode:          models.VisaDebit,
 		SenderAccountNumber:        "4653459515756154",
 	}
 	octPayload, err := json.Marshal(pushFundsTransactionRequest)
