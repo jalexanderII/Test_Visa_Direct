@@ -13,6 +13,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/jalexanderII/Test_Visa_Direct/models"
@@ -43,38 +44,48 @@ var (
 )
 
 func main() {
-	acquiringBin := "408999"
+	acquiringBin := 408999
 
 	t := time.Now()
 	localTransactionDateTime := fmt.Sprintf(RFC3339Format,
 		t.Year(), t.Month(), t.Day(),
 		t.Hour(), t.Minute(), t.Second())
+	systemsTraceAuditNumber := 451018
 
 	log.Println("######################## START PULL (OCT)  Transaction #############################")
 	pullFundsTransactionRequest := models.PullFundsTransactionRequest{
-		Surcharge:                                "11.99",
-		CpsAuthorizationCharacteristicsIndicator: "Y",
-		RiskAssessmentData: models.RiskAssessmentData{
-			TraExemptionIndicator:             true,
-			TrustedMerchantExemptionIndicator: true,
-			ScpExemptionIndicator:             true,
-			DelegatedAuthenticationIndicator:  true,
-			LowValueExemptionIndicator:        true,
+		AcquirerCountryCode:   models.USA,
+		AcquiringBin:          acquiringBin,
+		Amount:                100,
+		BusinessApplicationId: models.AccountToAccount,
+		CardAcceptor: models.CardAcceptor{
+			Address: models.Address{
+				Country: "USA",
+				ZipCode: "94404",
+				County:  "SanMateo",
+				State:   "CA",
+			},
+			IdCode:     "CA-IDCode-77765",
+			Name:       "Acceptor 1",
+			TerminalId: "TID-9999",
 		},
-		AccountType:        "20",
-		SenderCurrencyCode: "USD",
+		LocalTransactionDateTime: localTransactionDateTime,
+		PointOfServiceData: models.PointOfServiceData{
+			PanEntryMode:     models.CredentialOnFilePanEntryModeCode,
+			PosConditionCode: models.ReservedForFutureUsePosConditionCode,
+			MotoECIIndicator: models.SecureElectronicCommerceTransaction,
+		},
+		RetrievalReferenceNumber:   models.GenerateRetrievalReferenceNumber(t, systemsTraceAuditNumber),
+		SenderCardExpiryDate:       "2020-03",
+		SenderCurrencyCode:         "USD",
+		SenderPrimaryAccountNumber: "4957030005123304",
+		SystemsTraceAuditNumber:    strconv.Itoa(systemsTraceAuditNumber),
+		AccountType:                models.CheckingAccount,
 		AddressVerificationData: models.AddressVerificationData{
 			Street:     "XYZ St",
 			PostalCode: "12345",
 		},
-		Cavv:                          "0000010926000071934977253000000000000000",
-		SenderPrimaryAccountNumber:    "4957030005123304",
-		VisaMerchantIdentifier:        "73625198",
-		ForeignExchangeFeeTransaction: "11.99",
-		SenderCardExpiryDate:          "2020-03",
-		NationalReimbursementFee:      "11.22",
-		Amount:                        "100",
-		LocalTransactionDateTime:      localTransactionDateTime,
+		Cavv: "0000010926000071934977253000000000000000",
 		ColombiaNationalServiceData: models.ColombiaNationalServiceData{
 			AddValueTaxReturn:                     "10.00",
 			TaxAmountConsumption:                  "10.00",
@@ -88,28 +99,20 @@ func main() {
 			CostTransactionIndicator:              "0",
 			NationalReimbursementFee:              "20.00",
 		},
-		PointOfServiceData: models.PointOfServiceData{
-			PanEntryMode:     "10",
-			PosConditionCode: "52",
-			MotoECIIndicator: "5",
+		CpsAuthorizationCharacteristicsIndicator: models.RequestsParticipation,
+		ForeignExchangeFeeTransaction:            11.99,
+		NationalReimbursementFee:                 11.22,
+		RiskAssessmentData: models.RiskAssessmentData{
+			TraExemptionIndicator:             true,
+			TrustedMerchantExemptionIndicator: true,
+			ScpExemptionIndicator:             true,
+			DelegatedAuthenticationIndicator:  true,
+			LowValueExemptionIndicator:        true,
 		},
-		CardAcceptor: models.CardAcceptor{
-			Address: models.Address{
-				Country: "USA",
-				ZipCode: "94404",
-				County:  "SanMateo",
-				State:   "CA",
-			},
-			IdCode:     "CA-IDCode-77765",
-			Name:       "Acceptor 1",
-			TerminalId: "TID-9999",
-		},
-		AcquirerCountryCode:        "840",
-		AcquiringBin:               acquiringBin,
-		RetrievalReferenceNumber:   "412770451018",
-		SystemsTraceAuditNumber:    "451018",
-		BusinessApplicationId:      "AA",
-		SettlementServiceIndicator: "9",
+		SettlementServiceIndicator: models.NationalSettlement,
+		SourceOfFundsCode:          models.VisaDebit,
+		Surcharge:                  11.99,
+		VisaMerchantIdentifier:     "73625198",
 	}
 	aftPayload, err := json.Marshal(pullFundsTransactionRequest)
 	if err != nil {
@@ -140,9 +143,9 @@ func main() {
 		SenderAddress:            "901MetroCenterBlvd",
 		LocalTransactionDateTime: localTransactionDateTime,
 		PointOfServiceData: models.PointOfServiceData{
-			PanEntryMode:     "90",
-			PosConditionCode: "00",
-			MotoECIIndicator: "0",
+			PanEntryMode:     models.CredentialOnFilePanEntryModeCode,
+			PosConditionCode: models.ReservedForFutureUsePosConditionCode,
+			MotoECIIndicator: models.SecureElectronicCommerceTransaction,
 		},
 		RecipientPrimaryAccountNumber: "4957030420210496",
 		ColombiaNationalServiceData: models.ColombiaNationalServiceData{
@@ -171,7 +174,7 @@ func main() {
 		},
 		SenderReference:            "",
 		AcquirerCountryCode:        "840",
-		AcquiringBin:               acquiringBin,
+		AcquiringBin:               strconv.Itoa(acquiringBin),
 		RetrievalReferenceNumber:   "412770451018",
 		SenderCity:                 "FosterCity",
 		SenderStateCode:            "CA",
@@ -216,7 +219,7 @@ func main() {
 		log.Println(err)
 	}
 
-	queryString := "?acquiringBIN=" + acquiringBin + "&transactionIdentifier=" + string(responseMap["transactionIdentifier"])
+	queryString := "?acquiringBIN=" + strconv.Itoa(acquiringBin) + "&transactionIdentifier=" + string(responseMap["transactionIdentifier"])
 	transactionQueryEndPoint := transactionEndPoint + queryString
 
 	responsePayload = invokeAPI(transactionQueryEndPoint, http.MethodGet, "")
